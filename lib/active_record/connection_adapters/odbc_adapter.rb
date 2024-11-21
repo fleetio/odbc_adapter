@@ -88,12 +88,11 @@ module ActiveRecord
       # when a connection is first established.
       attr_reader :database_metadata
 
-      def initialize(connection, logger, config, database_metadata)
-        configure_time_options(connection)
-        super(connection, logger, config)
-        @database_metadata = database_metadata
+      def initialize(config = {})
+        super(config)
 
         connect
+        @database_metadata = ::ODBCAdapter::DatabaseMetadata.new(@connection, config[:encoding_bug])
       end
 
       # Returns the human-readable name of the adapter.
@@ -218,5 +217,7 @@ module ActiveRecord
         connection.use_time = true
       end
     end
+
+    register 'odbc', 'ActiveRecord::ConnectionAdapters::ODBCAdapter', 'active_record/connection_adapters/odbc_adapter'
   end
 end
